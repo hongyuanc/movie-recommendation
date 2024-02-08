@@ -9,17 +9,38 @@ movies = pd.read_csv('movies.csv')
 # pd.set_option('display.max_rows', None)
 
 movies = movies.merge(credits, on = 'title')
-movies = movies [['movie_id', 'title', 'overview', 'genres', 'keywords', 'cast', 'crew']]
+movies = movies [['movie_id', 'title', 'genres', 'keywords', 'cast', 'crew']]
 
 movies.dropna(inplace=True)
 
+# functions that uses ast to evaluate and modify the contents of the spreadsheet
 def convert(x):
     list = []
-    for y in ast.literal_eval(x):
-        list.append(y['name'])
+    for i in ast.literal_eval(x):
+        list.append(i['name'])
     return list
 
-movies['genres'] = convert(movies['genres'])
-movies['keywords'] = convert(movies['keywords'])
+def convert_cast(x):
+    list = []
+    count = 0
+    for i in ast.literal_eval(x):
+        if count != 3:
+            list.append(i['name'])
+            count += 1
+        else:
+            break
+        return list
+    
+def director(x):
+    list = []
+    for i in ast.literal_eval(x):
+        if i['job'] == 'Director':
+            list.append(i['name'])
+    return list        
 
-print(movies.isnull().sum())
+movies['genres'] = movies['genres'].apply(convert)
+movies['keywords'] = movies['keywords'].apply(convert)
+movies['cast'] = movies['cast'].apply(convert_cast)
+movies['crew'] = movies['crew'].apply(director)
+
+print(movies)
