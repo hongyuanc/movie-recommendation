@@ -60,4 +60,8 @@ movies['crew'] = movies['crew'].apply(director)
 for x, y in movies.items():
     movies[x] = clear_spaces(movies[x])
 
-print(movies)
+movies['key'] = movies['genres'] + movies['keywords'] + movies['cast'] + movies['crew']
+
+new = movies[['movie_id', 'title', 'key']]
+
+print(new)
