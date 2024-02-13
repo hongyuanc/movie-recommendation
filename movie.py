@@ -43,10 +43,21 @@ def director(x):
             list.append(i['name'])
     return list        
 
+def clear_spaces(x):
+    """ 
+    removes spaces in inputs
+    """
+    return x.apply(lambda cell:[i.replace(" ", "") for i in cell] \
+                   if type(cell) == list else cell)
+
 # applying the functions to clean the dataset
 movies['genres'] = movies['genres'].apply(convert)
 movies['keywords'] = movies['keywords'].apply(convert)
 movies['cast'] = movies['cast'].apply(convert_cast)
 movies['crew'] = movies['crew'].apply(director)
+
+# iterating though movies to clear the spaces
+for x, y in movies.items():
+    movies[x] = clear_spaces(movies[x])
 
 print(movies)
