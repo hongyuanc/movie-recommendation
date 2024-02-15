@@ -1,3 +1,6 @@
+# movie_recommendation
+# made by: Hong
+
 import numpy as np
 import pandas as pd
 import ast
@@ -20,12 +23,18 @@ movies.dropna(inplace=True)
 
 # functions that uses ast to evaluate and modify the contents of the spreadsheet
 def convert(x):
+    """
+    removes the {} in the datasheet
+    """
     list = []
     for i in ast.literal_eval(x):
         list.append(i['name'])
     return list
 
 def convert_cast(x):
+    """
+    finds and return the an actor
+    """
     list = []
     count = 0
     for i in ast.literal_eval(x):
@@ -37,6 +46,9 @@ def convert_cast(x):
         return list
     
 def director(x):
+    """
+    looks for the director and returns the name
+    """
     list = []
     for i in ast.literal_eval(x):
         if i['job'] == 'Director':
@@ -60,8 +72,10 @@ movies['crew'] = movies['crew'].apply(director)
 for x, y in movies.items():
     movies[x] = clear_spaces(movies[x])
 
+# summing up important keys into a new column
 movies['key'] = movies['genres'] + movies['keywords'] + movies['cast'] + movies['crew']
 
+# creating a new DataFrame object
 new = movies[['movie_id', 'title', 'key']]
 
 print(new)
