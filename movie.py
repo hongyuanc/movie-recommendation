@@ -2,9 +2,11 @@
 # made by: Hong
 
 #%%
+from re import M
 import numpy as np
 import pandas as pd
 import ast
+from scipy.special import roots_hermitenorm
 from sklearn.feature_extraction.text import CountVectorizer
 import nltk
 from nltk.stem.porter import PorterStemmer
@@ -118,6 +120,13 @@ new.loc[:, 'key'] = new['key'].apply(stem)
 #%%
 similarity = cosine_similarity(vectors)
 
+def recommend(movie):
+    index = new[new['title'] == movie].index[0]
+    distances = similarity[index]
+    m_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]
+
+    for i in m_list:
+        print(new.iloc[i[0]].title)
 #%%
-print(new)
+recommend('Iron Man')
 # %%
