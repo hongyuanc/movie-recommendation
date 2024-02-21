@@ -1,12 +1,16 @@
 # movie_recommendation
 # made by: Hong
 
+#%%
 import numpy as np
 import pandas as pd
 import ast
 from sklearn.feature_extraction.text import CountVectorizer
 import nltk
+from nltk.stem.porter import PorterStemmer
+from sklearn.metrics.pairwise import cosine_similarity
 
+#%%
 # opening the files
 credits = pd.read_csv('credits.csv')
 movies = pd.read_csv('movies.csv')
@@ -98,5 +102,22 @@ new.loc[:, 'key'] = new['key'].fillna('')
 vectors = cv.fit_transform(new['key']).toarray()
 
 #%%
-print(vectors[0])
+ps = PorterStemmer()
+
+def stem(x):
+    """
+    turns a string into its original stem using PorterStemmer
+    """
+    list = []
+    for i in x.split():
+        list.append(ps.stem(i))
+    return ' '.join(list)
+
+new.loc[:, 'key'] = new['key'].apply(stem)
+
+#%%
+similarity = cosine_similarity(vectors)
+
+#%%
+print(new)
 # %%
