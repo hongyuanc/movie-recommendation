@@ -78,4 +78,6 @@ movies['key'] = movies['genres'] + movies['keywords'] + movies['cast'] + movies[
 # creating a new DataFrame object
 new = movies[['movie_id', 'title', 'key']]
 
-print(new)
+new.loc[:,'key'] = new['key'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
+
+print(new['key'].iloc[0])
