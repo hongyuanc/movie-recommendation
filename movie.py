@@ -4,6 +4,8 @@
 import numpy as np
 import pandas as pd
 import ast
+from sklearn.feature_extraction.text import CountVectorizer
+import nltk
 
 # opening the files
 credits = pd.read_csv('credits.csv')
@@ -78,6 +80,23 @@ movies['key'] = movies['genres'] + movies['keywords'] + movies['cast'] + movies[
 # creating a new DataFrame object
 new = movies[['movie_id', 'title', 'key']]
 
-new.loc[:,'key'] = new['key'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
+# removes [] in key, and if the object is not iterable, we ignore it
+new.loc[:, 'key'] = new['key'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
 
-print(new['key'].iloc[0])
+# same application excepts turns everything into lowercase - easier
+# for data processing
+new.loc[:, 'key'] = new['key'].apply(lambda x: x.lower() if isinstance(x, str) else x)
+
+#
+# FILTERING DATA USING VECTORS AND MATRICIES
+#
+
+#%%
+cv = CountVectorizer(max_features = 5000, stop_words = 'english')
+
+new.loc[:, 'key'] = new['key'].fillna('')
+vectors = cv.fit_transform(new['key']).toarray()
+
+#%%
+print(vectors[0])
+# %%
