@@ -2,7 +2,6 @@
 # made by: Hong
 
 #%%
-from re import M
 import numpy as np
 import pandas as pd
 import ast
@@ -94,7 +93,7 @@ new.loc[:, 'key'] = new['key'].apply(lambda x: ' '.join(x) if isinstance(x, list
 new.loc[:, 'key'] = new['key'].apply(lambda x: x.lower() if isinstance(x, str) else x)
 
 #
-# FILTERING DATA USING VECTORS AND MATRICIES
+# FILTERING DATA USING VECTORS AND COMPARING DISTANCES
 #
 
 #%%
@@ -128,5 +127,40 @@ def recommend(movie):
     for i in m_list:
         print(new.iloc[i[0]].title)
 #%%
-recommend('Iron Man')
+# making an interface for the recommendation system
+import tkinter as tk
+from tkinter import messagebox, Listbox
+
+class MovieRecommenderApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Movie Recommender System")
+
+        self.label = tk.Label(root, text="Enter Movie Name:")
+        self.label.pack(pady=10)
+
+        self.entry = tk.Entry(root, width=50)
+        self.entry.pack(pady=10)
+
+        self.button = tk.Button(root, text="Recommend", command=self.get_recommendations)
+        self.button.pack(pady=10)
+
+        self.listbox = Listbox(root, width=50, height=10)
+        self.listbox.pack(pady=10)
+
+    def get_recommendations(self):
+        movie_name = self.entry.get()
+        try:
+            recommendations = recommend(movie_name)
+            self.listbox.delete(0, tk.END)
+            for movie in recommendations:
+                self.listbox.insert(tk.END, movie)
+        except IndexError:
+            messagebox.showerror("Error", "Movie not found in the database.")
+
+# Run the application
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MovieRecommenderApp(root)
+    root.mainloop()
 # %%
