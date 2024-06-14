@@ -28,6 +28,8 @@ class MovieRecommenderApp:
         # Load and preprocess data
         self.new, self.similarity = self.load_and_preprocess_data()
 
+        self.entry.bind('<Return>', self.get_recommendations)
+
     def load_and_preprocess_data(self):
         credits = pd.read_csv('credits.csv')
         movies = pd.read_csv('movies.csv')
@@ -85,7 +87,7 @@ class MovieRecommenderApp:
 
         return recommended_movies
 
-    def get_recommendations(self):
+    def get_recommendations(self, event=None):
         movie_name = self.entry.get()
         self.listbox.delete(0, tk.END)
         try:
