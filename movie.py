@@ -2,6 +2,8 @@
 # made by: Hong
 
 #%%
+import tkinter as tk
+from tkinter import messagebox, Listbox
 import numpy as np
 import pandas as pd
 import ast
@@ -119,18 +121,6 @@ new.loc[:, 'key'] = new['key'].apply(stem)
 #%%
 similarity = cosine_similarity(vectors)
 
-def recommend(movie):
-    index = new[new['title'] == movie].index[0]
-    distances = similarity[index]
-    m_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]
-
-    for i in m_list:
-        print(new.iloc[i[0]].title)
-#%%
-# making an interface for the recommendation system
-import tkinter as tk
-from tkinter import messagebox, Listbox
-
 class MovieRecommenderApp:
     def __init__(self, root):
         self.root = root
@@ -148,6 +138,18 @@ class MovieRecommenderApp:
         self.listbox = Listbox(root, width=50, height=10)
         self.listbox.pack(pady=10)
 
+    def recommend(movie):
+        index = new[new['title'] == movie].index[0]
+        distances = similarity[index]
+        m_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]
+
+        movies = []
+        for i in m_list:
+            movies[i] = new.iloc[i[0]].title
+
+        return movies
+#%%
+# making an interface for the recommendation system
     def get_recommendations(self):
         movie_name = self.entry.get()
         try:
