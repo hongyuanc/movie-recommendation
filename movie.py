@@ -1,7 +1,7 @@
 # movie recommendation system
 
 import tkinter as tk
-from tkinter import messagebox, Listbox
+from tkinter import Listbox
 import pandas as pd
 import ast
 from sklearn.feature_extraction.text import CountVectorizer
@@ -11,7 +11,7 @@ from nltk.stem.porter import PorterStemmer
 class MovieRecommenderApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Movie Recommender System")
+        self.root.title("Movie Recommendation System")
 
         self.label = tk.Label(root, text="Enter Movie Name:")
         self.label.pack(pady=10)
@@ -54,15 +54,15 @@ class MovieRecommenderApp:
             movies[col] = movies[col].apply(lambda x: [i.replace(" ", "") for i in x])
 
         movies['key'] = movies['genres'] + movies['keywords'] + movies['cast'] + movies['crew']
-        new = movies[['movie_id', 'title', 'key']]
-        new['key'] = new['key'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
-        new['key'] = new['key'].apply(lambda x: x.lower() if isinstance(x, str) else x)
+        new = movies[['movie_id', 'title', 'key', 'genres']].copy()
+        new.loc[:,'key'] = new['key'].apply(lambda x: ' '.join(x) if isinstance(x, list) else x)
+        new.loc[:,'key'] = new['key'].apply(lambda x: x.lower() if isinstance(x, str) else x)
 
         ps = PorterStemmer()
         def stem(x):
             return ' '.join([ps.stem(i) for i in x.split()])
 
-        new['key'] = new['key'].apply(stem)
+        new.loc[:,'key'] = new['key'].apply(stem)
 
         cv = CountVectorizer(max_features=5000, stop_words='english')
         vectors = cv.fit_transform(new['key']).toarray()
@@ -71,28 +71,44 @@ class MovieRecommenderApp:
         return new, similarity
 
     def recommend(self, movie):
-        index = self.new[self.new['title'] == movie].index[0]
+        movie = movie.lower()
+        index = self.new[self.new['title'].str.lower() == movie].index[0]
         distances = self.similarity[index]
         m_list = sorted(list(enumerate(distances)), reverse=True, key=lambda x: x[1])[1:6]
 
         recommended_movies = []
         for i in m_list:
-            recommended_movies.append(self.new.iloc[i[0]].title)
+            title = self.new.iloc[i[0]].title
+            genres = self.new.iloc[i[0]].genres[0]
+
+            recommended_movies.append(title)
 
         return recommended_movies
 
     def get_recommendations(self):
         movie_name = self.entry.get()
+        self.listbox.delete(0, tk.END)
         try:
             recommendations = self.recommend(movie_name)
-            self.listbox.delete(0, tk.END)
             for movie in recommendations:
                 self.listbox.insert(tk.END, movie)
         except IndexError:
-            messagebox.showerror("Error", "Movie not found in the database.")
+            self.listbox.insert(tk.END, "Error, movie not found. Try another?")
 
 # Run the application
 if __name__ == "__main__":
     root = tk.Tk()
     app = MovieRecommenderApp(root)
+
+    # starts the console in the middle of the screen
+    window_width = 400
+    window_height = 350
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+
+    x = int((screen_width/2) - (window_width/2))
+    y = int((screen_height/2) - (window_height/2))
+
+    root.geometry(f"{window_width}x{window_height}+{x}+{y}")
+
     root.mainloop()
