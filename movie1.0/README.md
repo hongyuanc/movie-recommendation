@@ -7,7 +7,7 @@ A quick description of how its done if anyones interested is, this program feeds
 The graphic interface looks something like this:
 
 <div style="display: inline-block; margin-right: 20px;">
-  <img src="assets/display1.png" alt="Display 1" style="width: 300px;">
-  <img src="assets/display2.png" alt="Display 2" style="width: 300px;">
-  <img src="assets/display3.png" alt="Display 3" style="width: 300px;">
+  <img src="../assets/display1.png" alt="Display 1" style="width: 300px;">
+  <img src="../assets/display2.png" alt="Display 2" style="width: 300px;">
+  <img src="../assets/display3.png" alt="Display 3" style="width: 300px;">
 </div>
