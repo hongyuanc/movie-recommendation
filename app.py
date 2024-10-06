@@ -44,11 +44,23 @@ with app.app_context():
     db.create_all()
 
 # TMDB API integration
-TMDB_API_KEY = 'your_tmdb_api_key_here'
+TMDB_ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 TMDB_BASE_URL = 'https://api.themoviedb.org/3'
 
 def get_movie_details(movie_id):
-    response = requests.get(f"{TMDB_BASE_URL}/movie/{movie_id}", params={'api_key': TMDB_API_KEY})
+    headers = {
+        "Authorization": f"Bearer {TMDB_ACCESS_TOKEN}",
+        "accept": "application/json"
+    }
+    response = requests.get(f"{TMDB_BASE_URL}/movie/{movie_id}", params={'api_key': TMDB_ACCESS_TOKEN})
+    return response.json()
+
+def get_new_movies():
+    headers = {
+        "Authorization": f"Bearer {TMDB_ACCESS_TOKEN}",
+        "accept": "application/json"
+    }
+    response = requests.get(f"{TMDB_BASE_URL}/movie/now_playing", headers=headers)
     return response.json()
 
 # Routes
@@ -122,7 +134,16 @@ def protected():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    movies_data = get_new_movies()
+    movies = []
+    for movie in movies_data['results'][:12]:
+        movies.append({
+            'title': movie['title'],
+            'release_date': movie['release_date'],
+            'vote_average': movie['vote_average'],
+            'poster_path': movie['poster_path']
+        })
+    return render_template('dashboard.html', movies=movies)
 
 if __name__ == '__main__':
     with app.app_context():

@@ -3,11 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Movie Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .movie-card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+        .movie-card:hover {
+            transform: scale(1.05);
+        }
+        .movie-card img {
+            width: 100%;
+            height: auto;
+        }
+        .movie-info {
+            padding: 10px;
+        }
+        .movie-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+        .movie-info p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-    <h1>Dashboard</h1>
-    <p>Welcome, {{ current_user.username }}!</p>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <h1>Movie Dashboard</h1>
+    <div class="movie-grid">
+        {% for movie in movies %}
+        <div class="movie-card">
+            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" alt="{{ movie.title }}">
+            <div class="movie-info">
+                <h3>{{ movie.title }}</h3>
+                <p>Release Date: {{ movie.release_date }}</p>
+                <p>Rating: {{ movie.vote_average }}/10</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </body>
 </html>
