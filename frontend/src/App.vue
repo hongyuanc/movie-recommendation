@@ -1,66 +1,85 @@
+<!-- src/App.vue -->
 <template>
   <div id="app">
     <h1>Movie Recommendation App</h1>
-    <button @click="getRecommendations">Get Recommendations</button>
-    <ul v-if="recommendations.length">
-      <li v-for="movie in recommendations" :key="movie">{{ movie }}</li>
-    </ul>
-    <div>
-      <input v-model="chatMessage" placeholder="Ask about movies...">
-      <button @click="sendChatMessage">Send</button>
-      <p v-if="chatResponse">{{ chatResponse }}</p>
-    </div>
-    <div v-if="dashboardData">
-      <h2>User Dashboard</h2>
-      <p>User: {{ dashboardData.user }}</p>
-      <p>Watched Movies: {{ dashboardData.watched_movies }}</p>
-      <p>Favorite Genre: {{ dashboardData.favorite_genre }}</p>
+    <nav>
+      <router-link to="/" v-if="!isLoggedIn">Home</router-link> |
+      <router-link to="/login" v-if="!isLoggedIn">Login</router-link>
+      <button v-else @click="logout">Logout</button>
+    </nav>
+
+    <router-view @login-success="handleLoginSuccess"></router-view>
+
+    <div v-if="$route.path === '/'">
+      <MovieDashboard />
+      <UserDashboard v-if="isLoggedIn" />
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import MovieDashboard from '@/components/MovieDashboard.vue'
+import UserDashboard from '@/components/UserDashboard.vue'
 
 export default {
   name: 'App',
-  data() {
+  components: {
+    MovieDashboard,
+    UserDashboard
+  },
+  setup() {
+    const isLoggedIn = ref(false)
+    const router = useRouter()
+
+    onMounted(() => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        isLoggedIn.value = true
+      }
+    })
+
+    const logout = () => {
+      localStorage.removeItem('token')
+      isLoggedIn.value = false
+      router.push('/login')
+    }
+
+    const handleLoginSuccess = () => {
+      isLoggedIn.value = true
+      router.push('/')
+    }
+
     return {
-      recommendations: [],
-      chatMessage: '',
-      chatResponse: '',
-      dashboardData: null
+      isLoggedIn,
+      logout,
+      handleLoginSuccess
     }
-  },
-  methods: {
-    async getRecommendations() {
-      try {
-        const response = await axios.get('/api/movies/recommend')
-        this.recommendations = response.data.recommendations
-      } catch (error) {
-        console.error('Error fetching recommendations:', error)
-      }
-    },
-    async sendChatMessage() {
-      try {
-        const response = await axios.post('/api/chatbot', { message: this.chatMessage })
-        this.chatResponse = response.data.response
-        this.chatMessage = ''
-      } catch (error) {
-        console.error('Error sending chat message:', error)
-      }
-    },
-    async getDashboardData() {
-      try {
-        const response = await axios.get('/api/user/dashboard')
-        this.dashboardData = response.data
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error)
-      }
-    }
-  },
-  mounted() {
-    this.getDashboardData()
   }
 }
 </script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+
+nav {
+  padding: 30px;
+}
+
+nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+nav a.router-link-exact-active {
+  color: #42b983;
+}
+</style>
