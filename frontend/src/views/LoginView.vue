@@ -17,6 +17,9 @@ import api from '@/api/config'
 
 export default {
   name: 'LoginView',
+  mounted(){
+    console.log('LoginView component mounted');
+  },
   emits: ['login-success'],
   setup(props, { emit }) {
     const username = ref('')
