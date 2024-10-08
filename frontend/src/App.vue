@@ -25,6 +25,11 @@ import UserDashboard from '@/components/UserDashboard.vue'
 
 export default {
   name: 'App',
+  mounted() {
+    console.log("app component mounted (App.vue)")
+    console.log("current route(app.vue)", this.$route)
+    console.log("router object (app.vue):", this.$router)
+  },
   components: {
     MovieDashboard,
     UserDashboard
